@@ -1,0 +1,5 @@
+
+
+def uniform(m, n):
+    
+     
