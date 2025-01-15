@@ -5,7 +5,7 @@ from collections import OrderedDict
 import yaml
 
 # read in data
-with open('newsgroup_data.yaml', 'r') as file:
+with open('CSE422_hw\\hw2\\newsgroup_data.yaml', 'r') as file:
     data = OrderedDict(yaml.safe_load(file)) # returns YAML data as an ordered dictionary
 
 # data: {'newsgroup1' : {'article1' : {'word_id1' : 'count1', 'wordid_2' : 'count2', ...}, ...}, ...}
@@ -20,8 +20,8 @@ def jaccard_sim(x, y):
     for word in all_words:
         x_count = x.get(word) if x.get(word) != None else 0
         y_count = y.get(word) if y.get(word) != None else 0
-        min_sum += np.min(x_count, y_count)
-        max_sum += np.max(x_count, y_count)
+        min_sum += np.minimum(x_count, y_count)
+        max_sum += np.maximum(x_count, y_count)
     return min_sum / max_sum
 
 def l2_sim(x, y):
@@ -56,10 +56,12 @@ def heatmap_array(sim_func):
                 num_comparisons = 0
 
                 # compare all pairwise articles
-                for (article1, bow1) in data[newsgroup_1].items():
-                    for (article2, bow2) in data[newsgroup_2].items():
+                for (_, bow1) in data[newsgroup_1].items():
+                    for (_, bow2) in data[newsgroup_2].items():
                         similarity_score += sim_func(bow1, bow2)
                         num_comparisons += 1
+                
+                # update result array with symmetry
                 result[index_1][index_2] = similarity_score / num_comparisons
                 result[index_2][index_1] = similarity_score / num_comparisons
     return result
@@ -67,15 +69,19 @@ def heatmap_array(sim_func):
 # creates heatmaps for all three similarity functions
 def heatmap_render():
     fig, ax = plt.subplots(3)
-
+    
+    # TODO: code works, but wrong plot formatting
+    print('Jaccard Similarity')
     jaccard_arr = heatmap_array(jaccard_sim)
-    ax[0] = sns.heatmap(jaccard_arr, linewidths=0.5)
-    ax[0].set_title("Average Jacard Similarity across Newsgroups")
+    ax[0] = sns.heatmap(jaccard_arr, linewidths=0.5) # not right...
+    ax[0].set_title("Average Jaccard Similarity across Newsgroups")
 
+    print('L2 Similarity')
     l2_arr = heatmap_array(l2_sim)
     ax[1] = sns.heatmap(l2_arr, linewidth=0.5)
     ax[1].set_title("Average L2 Similarity across Newsgroups")
 
+    print('Cosine Similarity')
     cosine_arr = heatmap_array(cosine_sim)
     ax[2] = sns.heatmap(cosine_arr, linewidth=0.5)
     ax[2].set_title("Average Cosine Similarity across Newsgroups")
@@ -84,3 +90,4 @@ def heatmap_render():
 
 if __name__ == '__main__':
     heatmap_render()
+    # print(data)
