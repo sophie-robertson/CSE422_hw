@@ -12,7 +12,8 @@ with open('CSE422_hw\\hw2\\newsgroup_data.yaml', 'r') as file:
 # should NOT turn earch article into length N vector
 # each newsgroup is ordered and can therefore be indexed
 
-# input: articles x, y
+# input: bag of words for articles x, y
+# 1 if identical
 def jaccard_sim(x, y):
     all_words = x.keys() | y.keys() # consider only non-zero entries in both articles
     min_sum = 0
@@ -24,6 +25,7 @@ def jaccard_sim(x, y):
         max_sum += np.maximum(x_count, y_count)
     return min_sum / max_sum
 
+# 0 if identical
 def l2_sim(x, y):
     all_words = x.keys() | y.keys() # consider only non-zero entries in both articles
     norm_sum = 0
@@ -33,6 +35,7 @@ def l2_sim(x, y):
         norm_sum += (x_count - y_count) ** 2
     return -1 * np.sqrt(norm_sum)
 
+# 1 if identical
 def cosine_sim(x, y):
     all_words = x.keys() | y.keys() # consider only non-zero entries in both articles
     x_norm_sum = 0
@@ -46,17 +49,32 @@ def cosine_sim(x, y):
         prod_sum += x_count * y_count
     return prod_sum / np.sqrt(x_norm_sum * y_norm_sum)
 
+def test_metrics():
+    test1 = {'one': 1, "two": 1, "three": 1}
+    test2 = {'one': 1, "two": 2, "four": 1}
+    assert jaccard_sim(test1, test2) == 2 / 5
+    assert l2_sim(test1, test2) == -1 * np.sqrt(3).item()
+    assert cosine_sim(test1, test2) == 3 / (np.sqrt(3).item() * np.sqrt(6).item())
+
+    test1 = {'one': 1, "two": 1, "three": 1, 'five': 2}
+    test2 = {'one': 1, "two": 2, "four": 1}
+    assert jaccard_sim(test1, test2) == 2 / 7
+    assert l2_sim(test1, test2) == -1 * np.sqrt(7).item()
+    assert cosine_sim(test1, test2) == 3 / (np.sqrt(7).item() * np.sqrt(6).item())
+    print('Passed')
+
 # creates 20x20 numpy array for heatmap rendering using given similarity function
 def heatmap_array(sim_func):
     result = np.empty((20,20))
     for index_1, newsgroup_1 in enumerate(data):
         for index_2, newsgroup_2 in enumerate(data):
             if (index_1 <= index_2): # decrease computation due to symmetry of heatmap
+                # print(index_1, index_2)
                 similarity_score = 0
                 num_comparisons = 0
 
                 # compare all pairwise articles
-                for (_, bow1) in data[newsgroup_1].items():
+                for (_, bow1) in data[newsgroup_1].items(): 
                     for (_, bow2) in data[newsgroup_2].items():
                         similarity_score += sim_func(bow1, bow2)
                         num_comparisons += 1
@@ -66,28 +84,43 @@ def heatmap_array(sim_func):
                 result[index_2][index_1] = similarity_score / num_comparisons
     return result
 
+
 # creates heatmaps for all three similarity functions
 def heatmap_render():
-    fig, ax = plt.subplots(3)
-    
-    # TODO: code works, but wrong plot formatting
+    newsgroups = list(data.keys())
+    cmap = sns.cm.rocket_r
+    fig, axs = plt.subplots(1,3, figsize=(35,5))
+    plt.subplots_adjust(left=0.15, right=0.95, bottom=0.4, wspace=0.9)
+
     print('Jaccard Similarity')
     jaccard_arr = heatmap_array(jaccard_sim)
-    ax[0] = sns.heatmap(jaccard_arr, linewidths=0.5) # not right...
-    ax[0].set_title("Average Jaccard Similarity across Newsgroups")
+    sns.heatmap(jaccard_arr, linewidths=0.5, ax=axs[0], cmap=cmap,
+                xticklabels=newsgroups, yticklabels=newsgroups) 
+    axs[0].set_title("Average Jaccard Similarity across Newsgroups")
 
     print('L2 Similarity')
     l2_arr = heatmap_array(l2_sim)
-    ax[1] = sns.heatmap(l2_arr, linewidth=0.5)
-    ax[1].set_title("Average L2 Similarity across Newsgroups")
+    sns.heatmap(l2_arr, linewidths=0.5, ax=axs[1], cmap=cmap,
+                xticklabels=newsgroups, yticklabels=newsgroups) 
+    axs[1].set_title("Average L2 Similarity across Newsgroups")
 
     print('Cosine Similarity')
     cosine_arr = heatmap_array(cosine_sim)
-    ax[2] = sns.heatmap(cosine_arr, linewidth=0.5)
-    ax[2].set_title("Average Cosine Similarity across Newsgroups")
+    sns.heatmap(cosine_arr, linewidths=0.5, ax=axs[2], cmap=cmap,
+                xticklabels=newsgroups, yticklabels=newsgroups) 
+    axs[2].set_title("Average Cosine Similarity across Newsgroups")
 
     plt.show()
 
+    # Testing format - if changing to vertical layout
+    # for i in range(3):
+    #     uniform_data = np.ones((20,20))
+    #     sns.heatmap(uniform_data, linewidth=0.5, ax=axs[i], cmap=cmap,
+    #                 xticklabels=newsgroups, yticklabels=newsgroups)
+    #     axs[i].set_title(f"Plot {i}")
+    # plt.subplots_adjust(left=0.15, right=0.95, bottom=0.4, wspace=0.9)
+    # plt.show() 
+
 if __name__ == '__main__':
+    # test_metrics()
     heatmap_render()
-    # print(data)
