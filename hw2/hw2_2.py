@@ -126,36 +126,39 @@ def plot_three(data1, data2, data3, d):
     arr_1, err1 = nearest_neighbor_heatmap(data1)
     arr_2, err2 = nearest_neighbor_heatmap(data2)
     arr_3, err3 = nearest_neighbor_heatmap(data3)
-    axs[0].imshow(arr_1, cmap='viridis')
+    im = axs[0].imshow(arr_1, cmap='viridis')
     axs[0].set_title(f"Heatmap when d = {d}, m = Case 1")
     axs[0].set_xlabel("Group A")
     axs[0].set_ylabel("Group B")
     axs[0].text(10, 23.5, f'Classification Error: {err1}', fontsize=10, ha='center', va='center')
-    axs[1].imshow(arr_2, cmap='viridis')
+    plt.colorbar(im, ax=axs[0], fraction=0.046, pad=0.04)
+    im2 = axs[1].imshow(arr_2, cmap='viridis')
     axs[1].set_title(f"Heatmap when d = {d}, m = Case 2")
     axs[1].set_xlabel("Group A")
     axs[1].set_ylabel("Group B")
     axs[1].text(10, 23.5, f'Classification Error: {err2}', fontsize=10, ha='center', va='center')
-    axs[2].imshow(arr_3, cmap='viridis')
+    plt.colorbar(im2, ax=axs[1], fraction=0.046, pad=0.04)
+    im3 = axs[2].imshow(arr_3, cmap='viridis')
     axs[2].set_title(f"Heatmap when d = {d}, m = Case 3")
     axs[2].set_xlabel("Group A")
     axs[2].set_ylabel("Group B")
     axs[2].text(10, 23.5, f'Classification Error: {err3}', fontsize=10, ha='center', va='center')
+    plt.colorbar(im3, ax=axs[2], fraction=0.046, pad=0.04)
     plt.show()
     
 
 
 if __name__ == '__main__':
-    plot_heatmap(full_data) 
+    # plot_heatmap(full_data) 
 
-    # dims = [10, 30, 60, 120]
-    # for d in dims:
-    #     m_1 = m1(d, 75000) 
-    #     m_2 = m2(d, 75000)  
-    #     m_3 = m3(d, 75000)
-    #     data_copy_1 = reduce_dimension(full_data, m_1)
-    #     data_copy_2 = reduce_dimension(full_data, m_2)
-    #     data_copy_3 = reduce_dimension(full_data, m_3)
-    #     plot_three(data_copy_1, data_copy_2, data_copy_3, d)
-    #print(full_data)
+    dims = [10, 30, 60, 120]
+    for d in dims:
+        m_1 = m1(d, 75000) 
+        m_2 = m2(d, 75000)  
+        m_3 = m3(d, 75000)
+        data_copy_1 = reduce_dimension(full_data, m_1)
+        data_copy_2 = reduce_dimension(full_data, m_2)
+        data_copy_3 = reduce_dimension(full_data, m_3)
+        plot_three(data_copy_1, data_copy_2, data_copy_3, d)
+    print(full_data)
     # print(data)
