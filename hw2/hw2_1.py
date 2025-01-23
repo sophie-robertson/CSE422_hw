@@ -5,7 +5,7 @@ from collections import OrderedDict
 import yaml
 
 # read in data
-with open('CSE422_hw\\hw2\\newsgroup_data.yaml', 'r') as file:
+with open('hw2\\newsgroup_data.yaml', 'r') as file:
     data = OrderedDict(yaml.safe_load(file)) # returns YAML data as an ordered dictionary
 
 # data: {'newsgroup1' : {'article1' : {'word_id1' : 'count1', 'wordid_2' : 'count2', ...}, ...}, ...}
@@ -115,7 +115,6 @@ def heatmap_render():
     plt.title("Average Cosine Similarity across Newsgroups")
     plt.subplots_adjust(left=0.375, right=0.875, bottom=0.45, top=0.93)
     plt.show()
-
     # # Printing all as a subplot
     # fig, axs = plt.subplots(1,3, figsize=(35,5))
     # plt.subplots_adjust(left=0.15, right=0.95, bottom=0.4, wspace=0.9)
@@ -153,7 +152,18 @@ def heatmap_render():
 #     plt.subplots_adjust(left=0.375, right=0.875, bottom=0.45, top=0.93)
 #     plt.show() 
 
+def average_length():
+    news_length = {}
+    for index, newsgroup in enumerate(data):
+        avg_length = 0
+        for (_, bow) in data[newsgroup].items():
+            avg_length += sum(bow.values())
+        avg_length /= len(data[newsgroup])
+        news_length[newsgroup] = avg_length
+    print(news_length)
+
 if __name__ == '__main__':
     # test_metrics()
-    heatmap_render()
+    # heatmap_render()
     # heatmap_format_testing()
+    average_length()
