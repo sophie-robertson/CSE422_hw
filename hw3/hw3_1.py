@@ -40,9 +40,9 @@ def grad_descent(X_train, y_train, d=20, t=20):
             losses[step].append(train_loss(X_train, y_train, theta))
     return losses
 
-def SGD(X_train, y_train, d=20, t=20000):
-    alpha_vals = [0.0005, 0.005, 0.01]
+def SGD(X_train, y_train, d=20, t=20000, alpha_vals = [0.0005, 0.005, 0.01]):
     losses = {}
+    thetas = []
     for step in alpha_vals:
         losses[step] = []
         theta = np.zeros((d, 1))
@@ -52,7 +52,8 @@ def SGD(X_train, y_train, d=20, t=20000):
             grad = (X_train[i,:].dot(theta) - y_train[i]) * X_train[i,:]
             theta -= step * np.expand_dims(grad, 1)
             losses[step].append(train_loss(X_train, y_train, theta))
-    return losses
+        thetas.append(theta)
+    return thetas, losses
 
 def SGD_var(X_train, y_train, min_loss, d=20, t=20000):
     alpha = 0.01
@@ -141,7 +142,7 @@ def main():
 
     # Part (f)
     print("Part (f)")
-    losses = SGD(X_train, y_train)
+    theta, losses = SGD(X_train, y_train)
     for step in losses:
         print(f'Step size {step}, final loss {losses[step][-1]}')
     plot_grad_descent(losses, t=20000, type='SGD')
