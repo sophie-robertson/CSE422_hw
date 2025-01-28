@@ -94,6 +94,12 @@ def main():
     all_zeros_loss = train_loss(X_train, y_train, np.zeros((X_train.shape[1], 1)))
     print(f"Loss with theta = 0: {all_zeros_loss}")
     print()
+    X_train, y_train= training_data(theta_star)
+    theta_hat, min_loss = closed_form(X_train, y_train)
+    print(f"Minimum loss: {min_loss}")
+    all_zeros_loss = train_loss(X_train, y_train, np.zeros((X_train.shape[1], 1)))
+    print(f"Loss with theta = 0: {all_zeros_loss}")
+    print()
 
     # Part (b)
     print("Part (b)")
