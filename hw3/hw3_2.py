@@ -15,13 +15,15 @@ def SGD(X_train, y_train, X_test, y_test, d=20, t=20000, alpha_vals = [0.0005, 0
         te_losses[step].append(test_loss(X_test, y_test, theta))
         if collect_thetas:
             theta_dict[step] = []
-            theta_dict[step].append(np.linalg.norm(theta, ord = 2)[0])
+            theta_dict[step].append(np.linalg.norm(theta, ord = 2))
         for j in range(t):
             i = np.random.randint(X_train.shape[0])
             grad = (X_train[i,:].dot(theta) - y_train[i]) * X_train[i,:]
             theta -= step * np.expand_dims(grad, 1)
             tr_losses[step].append(train_loss(X_train, y_train, theta))
             te_losses[step].append(test_loss(X_test, y_test, theta))
+            if collect_thetas:
+                theta_dict[step].append(np.linalg.norm(theta, ord = 2))
         thetas.append(theta)
     return thetas, tr_losses, te_losses, theta_dict    
 
@@ -98,7 +100,7 @@ def b():
     plt.show()
 
 def c():
-    n_trials = 1
+    n_trials = 10
     alphas = [0.00005, 0.0005, 0.005]
     temp_train_losses = np.zeros((len(alphas), n_trials))
     temp_test_losses = np.zeros((len(alphas), n_trials))
@@ -108,8 +110,10 @@ def c():
         X_train, y_train, X_test, y_test= training_data()
         thetas, _, _, _ = SGD(X_train, y_train, X_test, y_test, d=200, t=steps, alpha_vals=alphas)
         for a in range(len(alphas)):
-            temp_train_losses[a, :] = np.add(temp_train_losses[a, :], train_loss(X_train, y_train, thetas[a]))
-            temp_test_losses[a, :] = np.add(temp_test_losses[a, :], test_loss(X_test, y_test, thetas[a]))
+            temp_train_losses[a, i] = np.add(temp_train_losses[a, i], train_loss(X_train, y_train, thetas[a]))
+            temp_test_losses[a, i] = np.add(temp_test_losses[a, i], test_loss(X_test, y_test, thetas[a]))
+        print(temp_train_losses[:, i])
+        print(temp_test_losses[:, i])
     average_train = np.mean(temp_train_losses, axis = 1)
     average_test = np.mean(temp_test_losses, axis = 1)
     print(f"Average train losses: {average_train}")
@@ -125,19 +129,23 @@ def d():
         X_train, y_train, X_test, y_test= training_data()
         thetas, train_losses, test_losses, theta_norms = SGD(X_train, y_train, X_test, y_test, d=200, t=steps, alpha_vals=alphas, collect_thetas=True)
 
-    average_train = np.mean(temp_train_losses, axis = 1)
-    average_test = np.mean(temp_test_losses, axis = 1)
-    print(f"Average train losses: {average_train}")
-    print(f"Average test losses: {average_test}")
     plt.figure()
     plt.xlabel("Iterations")
     plt.ylabel("Normalized Loss")
     for a in train_losses.keys():
         plt.plot(range(steps + 1), train_losses[a], label = f"Train loss, a = {a}")
         plt.plot(range(steps + 1), test_losses[a], label = f"Test loss, a = {a}")
+    plt.legend()
+    plt.show()
+
+    plt.figure()
+    plt.xlabel("Iterations")
+    plt.ylabel("L2 Norm of Theta")
+    for a in train_losses.keys():
         plt.plot(range(steps + 1), theta_norms[a], label = f"Theta norms, a = {a}")
     plt.legend()
     plt.show()
+
 
 
 
@@ -146,10 +154,12 @@ def main():
     # a()
 
     # # Part (b)
-    # b()
+    #b()
 
-    # Part (c) and (d)
-    c_d()
+    # Part (c)
+    #c()
+
+    d()
 
 
 
