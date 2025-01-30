@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats as stat
+
 
 def pca_recover(x, y):
     data = np.vstack((x, y)).T
@@ -73,6 +75,8 @@ def c(x, y):
 
 
 
+
+
 def main():
     # Testing helper functions
     x = np.linspace(0.001, 1, 1000) #[.001, .002, .003, ..., 1]
@@ -83,7 +87,7 @@ def main():
 
     # b(x, y)
 
-    c(x, y)
+    # c(x, y)
 
 
 
