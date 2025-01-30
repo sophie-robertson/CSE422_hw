@@ -39,12 +39,17 @@ def b(x, y):
         
         pcas = np.asarray(pcas)
         lss = np.asarray(lss)
-
-        plt.scatter(sigmas, pcas, color = "red")
-        plt.scatter(sigmas, lss, color = "blue")
+        if i == 0:
+            plt.scatter(sigmas, pcas, color = "red", label = "PCA Slope Estimate")
+            plt.scatter(sigmas, lss, color = "blue", label = "LS Slope Estimate")
+        else:
+            plt.scatter(sigmas, pcas, color = "red")
+            plt.scatter(sigmas, lss, color = "blue")
+        
+    plt.title("Noisy Y, PCA and LS Recovery")
     plt.xlabel("Sigma")
     plt.ylabel("Returned Slope")
-    # plt.legend() # figure out how to only plot labels once
+    plt.legend() # figure out how to only plot labels once
     plt.show()
 
 def c(x, y):
@@ -64,11 +69,17 @@ def c(x, y):
         pcas = np.asarray(pcas)
         lss = np.asarray(lss)
 
-        plt.scatter(sigmas, pcas, color = "red")
-        plt.scatter(sigmas, lss, color = "blue")
+        if i == 0:
+            plt.scatter(sigmas, pcas, color = "red", label = "PCA Slope Estimate")
+            plt.scatter(sigmas, lss, color = "blue", label = "LS Slope Estimate")
+        else:
+            plt.scatter(sigmas, pcas, color = "red")
+            plt.scatter(sigmas, lss, color = "blue")
+
+    plt.title("Noisy X and Y, PCA and LS Recovery")
     plt.xlabel("Sigma")
     plt.ylabel("Returned Slope")
-    # plt.legend() # figure out how to only plot labels once
+    plt.legend() # figure out how to only plot labels once
     plt.show()
 
 
@@ -87,7 +98,7 @@ def main():
 
     # b(x, y)
 
-    # c(x, y)
+    c(x, y)
 
 
 

@@ -53,6 +53,7 @@ def a(data, pop_arr, pop_dict):
         x = projected[indices, 0]
         y = projected[indices, 1]
         plt.scatter(x, y, label = l)
+    plt.title("2-Dimensional Genetic Data (PCA 1 and 2)")
     plt.xlabel("PC1")
     plt.ylabel("PC2")
     plt.legend()
@@ -81,8 +82,8 @@ def c(data, pop_arr, pop_dict, sex_arr):
         y_male = y[male]
         y_female = y[female]
         plt.scatter(x_male, y_male, label = f"Pop: {l}, Sex: Male", color = color_list[i], marker = '.')
-        plt.scatter(x_female, y_female, label = f"Pop: {l}, Sex: Feale", color = color_list[i], marker = '*')
-
+        plt.scatter(x_female, y_female, label = f"Pop: {l}, Sex: Female", color = color_list[i], marker = '*')
+    plt.title("2-Dimensional Genetic Data (PCA 1 and 3)")
     plt.xlabel("PC1")
     plt.ylabel("PC3")
     plt.legend()
@@ -90,8 +91,8 @@ def c(data, pop_arr, pop_dict, sex_arr):
 
 def main():
     data, pop_arr, pop_dict, sex_arr = process_pca_data()
-    # a(data, pop_arr, pop_dict)
-    c(data, pop_arr, pop_dict, sex_arr)
+    a(data, pop_arr, pop_dict)
+    # c(data, pop_arr, pop_dict, sex_arr)
 
 
 
