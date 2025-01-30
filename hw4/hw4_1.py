@@ -24,24 +24,49 @@ def ls_recover(x, y):
     return num/denom
 
 def b(x, y):
-    sigmas = np.linspace(0, 0.5, 11)#[0, 0.05, 1, . . . , 0.45, 0.5]
-    pcas = []
-    lss = []
-    for s in sigmas:
-        noise = np.random.randn(1000)*s
-        curr_y = np.add(y, noise)
-        pcas.append(pca_recover(x, curr_y))
-        lss.append(ls_recover(x, curr_y))
-    
-    pcas = np.asarray(pcas)
-    lss = np.asarray(lss)
-
     plt.figure()
-    plt.scatter(sigmas, pcas, color = "red", label = "PCA Recover")
-    plt.scatter(sigmas, lss, color = "blue", label = "LS Recover")
+    sigmas = np.linspace(0, 0.5, 11)#[0, 0.05, 1, . . . , 0.45, 0.5]
+    for i in range(40):
+        pcas = []
+        lss = []
+        for s in sigmas:
+            noise = np.random.randn(1000)*s
+            curr_y = np.add(y, noise)
+            pcas.append(pca_recover(x, curr_y))
+            lss.append(ls_recover(x, curr_y))
+        
+        pcas = np.asarray(pcas)
+        lss = np.asarray(lss)
+
+        plt.scatter(sigmas, pcas, color = "red")
+        plt.scatter(sigmas, lss, color = "blue")
     plt.xlabel("Sigma")
     plt.ylabel("Returned Slope")
-    plt.legend()
+    # plt.legend() # figure out how to only plot labels once
+    plt.show()
+
+def c(x, y):
+    plt.figure()
+    sigmas = np.linspace(0, 0.5, 11)#[0, 0.05, 1, . . . , 0.45, 0.5]
+    for i in range(40):
+        pcas = []
+        lss = []
+        for s in sigmas:
+            y_noise = np.random.randn(1000)*s
+            x_noise = np.random.randn(1000)*s
+            curr_y = np.add(y, y_noise)
+            curr_x = np.add(x, x_noise)
+            pcas.append(pca_recover(curr_x, curr_y))
+            lss.append(ls_recover(curr_x, curr_y))
+        
+        pcas = np.asarray(pcas)
+        lss = np.asarray(lss)
+
+        plt.scatter(sigmas, pcas, color = "red")
+        plt.scatter(sigmas, lss, color = "blue")
+    plt.xlabel("Sigma")
+    plt.ylabel("Returned Slope")
+    # plt.legend() # figure out how to only plot labels once
     plt.show()
 
 
@@ -56,7 +81,9 @@ def main():
     # print(pca_recover(x, y))
     # print(ls_recover(x, y))
 
-    b(x, y)
+    # b(x, y)
+
+    c(x, y)
 
 
 
