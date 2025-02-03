@@ -91,8 +91,8 @@ def c(data, pop_arr, pop_dict, sex_arr):
 
 def main():
     data, pop_arr, pop_dict, sex_arr = process_pca_data()
-    a(data, pop_arr, pop_dict)
-    # c(data, pop_arr, pop_dict, sex_arr)
+    # a(data, pop_arr, pop_dict)
+    c(data, pop_arr, pop_dict, sex_arr)
 
 
 
