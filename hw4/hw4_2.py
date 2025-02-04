@@ -68,21 +68,33 @@ def c(data, pop_arr, pop_dict, sex_arr):
     projected = first_three.transform(demeaned)
 
     plt.figure()
-    color_list= ["blue", "orange", "green",  "red", "purple", "brown", "pink"]
 
-    for i, k in enumerate(pop_dict.keys()):
-        l = k
-        indices = np.argwhere(pop_arr == pop_dict[k])
-        x = projected[indices, 0]
-        y = projected[indices, 2]
-        male = np.argwhere(sex_arr[indices] == 1)
-        female = np.argwhere(sex_arr[indices] == 2)
-        x_male = x[male]
-        x_female = x[female]
-        y_male = y[male]
-        y_female = y[female]
-        plt.scatter(x_male, y_male, label = f"Pop: {l}, Sex: Male", color = color_list[i], marker = '.')
-        plt.scatter(x_female, y_female, label = f"Pop: {l}, Sex: Female", color = color_list[i], marker = '*')
+    male_indices = np.argwhere(sex_arr == 1)
+    x_male = projected[male_indices, 0]
+    y_male = projected[male_indices, 2]
+    fem_indices = np.argwhere(sex_arr == 2)
+    x_fem = projected[fem_indices, 0]
+    y_fem = projected[fem_indices, 2]
+    plt.scatter(x_male, y_male, label = f"Sex: Male", color = 'blue')
+    plt.scatter(x_fem, y_fem, label = f"Sex: Female", color = 'pink')
+
+    # Originally plotting populations too
+    # color_list= ["blue", "orange", "green",  "red", "purple", "brown", "pink"]
+
+    # for i, k in enumerate(pop_dict.keys()):
+    #     l = k
+    #     indices = np.argwhere(pop_arr == pop_dict[k])
+    #     x = projected[indices, 0]
+    #     y = projected[indices, 2]
+    #     male = np.argwhere(sex_arr[indices] == 1)
+    #     female = np.argwhere(sex_arr[indices] == 2)
+    #     x_male = x[male]
+    #     x_female = x[female]
+    #     y_male = y[male]
+    #     y_female = y[female]
+    #     plt.scatter(x_male, y_male, label = f"Pop: {l}, Sex: Male", color = color_list[i], marker = '.')
+    #     plt.scatter(x_female, y_female, label = f"Pop: {l}, Sex: Female", color = color_list[i], marker = '*')
+    
     plt.title("2-Dimensional Genetic Data (PCA 1 and 3)")
     plt.xlabel("PC1")
     plt.ylabel("PC3")
