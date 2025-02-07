@@ -23,7 +23,7 @@ def get_top_100(data, k = 100):
     return u, s, vt
 
 def similarity(ui, vi):
-    return np.dot(ui, vi)
+    return np.dot(ui, vi) 
 
 def a(s):
     plt.figure()
@@ -73,7 +73,33 @@ def c_d(u, dictionary, words):
     plt.xticks(range(len(words)), words)
     plt.show()
 
-def e(u, dictionary, analogies):
+import bisect
+
+def e1(u, dictionary):
+    norms = np.linalg.norm(u, axis=1, keepdims=True)  
+    norm_u = u / norms  
+    target = 'washington'
+    embedding = norm_u[dictionary.index(target)]
+    top_10_words = []
+    top_10_sim = []
+    for i in range(len(dictionary)):
+        if (i != dictionary.index(target)):
+            sim = similarity(embedding, u[i])
+
+            top_10_sim.reverse()
+            top_10_words.reverse()
+            index = bisect.bisect_right(top_10_sim, sim)
+            top_10_words.insert(index, dictionary[i])
+            top_10_sim.insert(index, sim)
+            top_10_sim.reverse()
+            top_10_words.reverse()
+
+            top_10_words = top_10_words[:10]
+            top_10_sim = top_10_sim[:10]
+    return top_10_words
+
+
+def e2(u, dictionary, analogies):
     norms = np.linalg.norm(u, axis=1, keepdims=True)  
     norm_u = u / norms  
     answer = None
@@ -107,11 +133,12 @@ def main():
 
     # b(u, dictionary)
 
-    c_words = ["boy", "girl", "brother", "sister", "king", "queen", "he", "she", "john", "mary", "all", "tree"]
-    c_d(u, dictionary, c_words)
+    # c_words = ["boy", "girl", "brother", "sister", "king", "queen", "he", "she", "john", "mary", "all", "tree"]
+    # c_d(u, dictionary, c_words)
 
-    d_words = ["math", "matrix", "history", "nurse", "doctor", "pilot", "teacher", "engineer", "science", "arts", "literature", "bob", "alice"]
-    c_d(u, dictionary, d_words)
+    # d_words = ["math", "matrix", "history", "nurse", "doctor", "pilot", "teacher", "engineer", "science", "arts", "literature", "bob", "alice"]
+    # c_d(u, dictionary, d_words)
+    print(e1(u, dictionary))
 
 if __name__ == '__main__':
     main()
