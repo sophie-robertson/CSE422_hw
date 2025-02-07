@@ -98,28 +98,70 @@ def e1(u, dictionary):
             top_10_sim = top_10_sim[:10]
     return top_10_words
 
+def cosine_similarity_vectorized(x, u):
+    # x in n x d
+    # y in m x d
+    # y.T in d x m
+    print(x.shape)
+    print(u.shape)
+    dotted = x @ u.T
+    # dotted in n x m
+    # norms in n x m
+        # at x[ij], divide by x_norm[i] * y_norm [j]
+    # x_norm in n
+    x_norm = np.linalg.norm(x, ord = 2, axis=1, keepdims = True)
+    # y_norm in m
+    y_norm = np.linalg.norm(u, ord = 2, axis=1, keepdims = True)
 
-def e2(u, dictionary, analogies):
+    outer = np.outer(x_norm.squeeze(), y_norm.squeeze())
+
+    return dotted / (outer + 1e-8)
+
+def load_embedded_analogies(norm_u, dictionary):
+    analogies = []
+    labels = []
+    with open('data/analogy_task.txt') as f:
+        for line in f:
+            tokens = line.rstrip().split()
+            a = tokens[0]
+            b = tokens[1]
+            aa = tokens[2]
+            bb = tokens[3]
+            target_vector = norm_u[dictionary.index(b)] - norm_u[dictionary.index(a)] + norm_u[dictionary.index(aa)]
+            analogies.append(target_vector)
+            labels.append(bb)
+
+    # n analogies x vector length (100)
+    analogies = np.stack(analogies)
+    print(analogies.shape)
+    print(len(labels))
+    return analogies, labels
+
+
+
+
+def e2(u, dictionary):
     norms = np.linalg.norm(u, axis=1, keepdims=True)  
     norm_u = u / norms  
-    answer = None
 
-    # where analogy is a is to b, as aa is to bb
+    analogies, labels = load_embedded_analogies(norm_u, dictionary)
 
-    # Calculate the analogy relationship vector
-    target_vector = norm_u[dictionary.index(a)] - norm_u[dictionary.index(b)] + norm_u[dictionary.index(aa)]
+    # should be n x m
+    similarities = cosine_similarity_vectorized(analogies, norm_u)
+    print(similarities.shape)
 
-    # Find the choice with the closest relationship vector
-    best_similarity = float('-inf')
-    choice = []
-    for choice in choices:
-        similarity = similarity(target_vector, norm_u[dictionary.index(choice)])  # Cosine similarity
-        if similarity > best_similarity:
-            best_similarity = similarity
-            answer = choice
+    indices = np.argmax(similarities, axis=1)
+    print(indices.shape)
+
+    num_correct = 0
+    for i in range(len(indices)):
+        prediction = dictionary[indices[i]]
+        print(f"Prediction: {prediction}, Correct: {labels[i]}")
+        if prediction == labels[i]:
+            num_correct += 1
 
 
-    return answer
+    return num_correct/len(indices)
 
 
 
@@ -138,7 +180,9 @@ def main():
 
     # d_words = ["math", "matrix", "history", "nurse", "doctor", "pilot", "teacher", "engineer", "science", "arts", "literature", "bob", "alice"]
     # c_d(u, dictionary, d_words)
-    print(e1(u, dictionary))
+    # print(e1(u, dictionary))
+
+    print(f"accuracy = {e2(u, dictionary)}")
 
 if __name__ == '__main__':
     main()
