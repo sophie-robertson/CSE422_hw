@@ -83,20 +83,24 @@ def e1(u, dictionary):
     top_10_words = []
     top_10_sim = []
     for i in range(len(dictionary)):
-        if (i != dictionary.index(target)):
-            sim = similarity(embedding, u[i])
+        # if (i != dictionary.index(target)):
+        sim = similarity(embedding, norm_u[i])
 
-            top_10_sim.reverse()
-            top_10_words.reverse()
-            index = bisect.bisect_right(top_10_sim, sim)
-            top_10_words.insert(index, dictionary[i])
-            top_10_sim.insert(index, sim)
-            top_10_sim.reverse()
-            top_10_words.reverse()
+        # reverse list (low to high similarity)
+        top_10_sim.reverse()
+        top_10_words.reverse()
+        # insert word at correct index
+        index = bisect.bisect_right(top_10_sim, sim)
+        top_10_words.insert(index, dictionary[i])
+        top_10_sim.insert(index, sim)
+        # reverse list (high to low similarity)
+        top_10_sim.reverse()
+        top_10_words.reverse()
 
-            top_10_words = top_10_words[:10]
-            top_10_sim = top_10_sim[:10]
-    return top_10_words
+        # take only top 11 words (including washington)
+        top_10_words = top_10_words[:11]
+        top_10_sim = top_10_sim[:11]
+    return (top_10_words, top_10_sim)
 
 def cosine_similarity_vectorized(x, u):
     # x in n x d
@@ -168,6 +172,7 @@ def e2(u, dictionary):
 
 
 def main():
+    print("Getting SVD")
     data, dictionary = load_data()
     u, s, vt = get_top_100(data)
 
@@ -180,9 +185,10 @@ def main():
 
     # d_words = ["math", "matrix", "history", "nurse", "doctor", "pilot", "teacher", "engineer", "science", "arts", "literature", "bob", "alice"]
     # c_d(u, dictionary, d_words)
-    # print(e1(u, dictionary))
+    print('Starting Analysis')
+    print(e1(u, dictionary))
 
-    print(f"accuracy = {e2(u, dictionary)}")
+    # print(f"accuracy = {e2(u, dictionary)}")
 
 if __name__ == '__main__':
     main()
