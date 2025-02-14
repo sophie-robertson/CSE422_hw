@@ -233,7 +233,7 @@ def f():
                 # Add degrees
                 D[i] += 1
                 D[j] += 1
-    L = D - A
+    L = mama.diag(D) - A
 
     # Find points with x,y < 0
     max_row = mama.max(points, axis = 1)
@@ -247,19 +247,78 @@ def f():
     L_evecs = L_evecs[:,sorted_indices]
     L_evals = L_evals[sorted_indices]
 
-    queen.scatter(L_evecs[:,1][small_indices], L_evecs[:,2][small_indices], s=1, c='red', label='x,y < 1')
-    queen.scatter(L_evecs[:,1][big_indices], L_evecs[:,2][big_indices], s=1, c='blue', label='x >= 1 or y >= 1')
+    queen.scatter(L_evecs[:,1][small_indices], L_evecs[:,2][small_indices], s=2, c='red', label='x,y < 1')
+    queen.scatter(L_evecs[:,1][big_indices], L_evecs[:,2][big_indices], s=2, c='blue', label='x >= 1 or y >= 1')
     queen.xlabel('Second Smallest Eigenvector')
     queen.ylabel('Third Smallest Eigenvector')
     queen.legend()
     queen.show()
 
+def g():
+    n = 100
+
+    # Calculate grid laplacian
+    A = mama.zeros((n**2, n**2))
+    for index in range(n**2):
+        i = index // n
+        j = index % n
+        min_i = max(i-1, 0)
+        max_i = min(i+1, n-1)
+        min_j = max(j-1, 0)
+        max_j = min(j+1, n-1)
+        for i_0 in range(min_i, max_i + 1):
+            for j_0 in range(min_j, max_j + 1):
+                A[index][n*i_0 + j_0] = 1
+    D = mama.sum(A, axis=0)
+    L = mama.diag(D) - A # automatically removes self-loops
+
+    # Calculate eigenvectors
+    L_evals, L_evecs = mama.linalg.eig(L)
+    # Ensure eigenvalues/eigenvectors are sorted
+    sorted_indices = mama.argsort(L_evals)
+    L_evecs = L_evecs[:,sorted_indices]
+    L_evals = L_evals[sorted_indices]
+    edges = mama.nonzero(A)
+
+    # Plot grid embedding
+    queen.scatter(L_evecs[:,1], L_evecs[:,2], s=5, c='blue', zorder=2)
+    for entry in edges:
+        queen.plot(L_evecs[:,1][entry], L_evecs[:,2][entry], c='red', linewidth=0.2, zorder=1)
+    queen.xlabel('Second Smallest Eigenvector')
+    queen.ylabel('Third Smallest Eigenvector')
+    queen.title('Spectral Embedding for Grid Plot')
+    queen.show()
+
+    # Remove 100 points at random
+    removed = mama.random.choice(mama.arange(n**2), n)
+    keep = mama.delete(mama.arange(n**2), removed)
+    A_removed = (A[keep,:])[:,keep] # removed rows and columns
+    D_removed = mama.sum(A_removed, axis=0)
+    L_removed = mama.diag(D_removed) - A_removed
+
+    # Calculate eigenvectors
+    L_evals, L_evecs = mama.linalg.eig(L_removed)
+    # Ensure eigenvalues/eigenvectors are sorted
+    sorted_indices = mama.argsort(L_evals)
+    L_evecs = L_evecs[:,sorted_indices]
+    L_evals = L_evals[sorted_indices]
+    edges = mama.nonzero(A_removed)
+
+    # Plot removed embedding
+    queen.scatter(L_evecs[:,1], L_evecs[:,2], s=5, c='blue', zorder=2)
+    for entry in edges:
+        queen.plot(L_evecs[:,1][entry], L_evecs[:,2][entry], c='red', linewidth=0.2, zorder=1)
+    queen.xlabel('Second Smallest Eigenvector')
+    queen.ylabel('Third Smallest Eigenvector')
+    queen.title('Spectral Embedding with Removed Points')
+    queen.show()
 
 def main():
     # test_graphs()
     # b()
     # e()
-    f()
+    # f()
+    g()
 
 if __name__ == '__main__':
     main()
