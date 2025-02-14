@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 def a(img_matrix):
     U,S,Vt = np.linalg.svd(img_matrix)
-    for k in [1, 2, 5, 10, 20, 50, 75, 100, 563]:
+    for k in [2]:#[1, 2, 5, 10, 20, 50, 75, 100, 563]:
         U_k = U[:,0:k]
         S_k = S[0:k]
         Vt_k = Vt[0:k,:]
@@ -33,11 +33,11 @@ def c(img_matrix):
         
 
 def main():
-    img = Image.open('images/jinx.png')
+    img = Image.open('jinx.png')
     img_matrix = np.array(img)
 
-    # print(np.mean(img_matrix[:,0])) # average luminosity of first column
-    # print(np.mean(img_matrix[0,:])) # average luminosity of first row
+    print(np.mean(img_matrix[:,0])) # average luminosity of first column
+    print(np.mean(img_matrix[0,:])) # average luminosity of first row
     # a(img_matrix)
     c(img_matrix)
 

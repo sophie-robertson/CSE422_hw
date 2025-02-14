@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.sparse.linalg import svds
 import matplotlib.pyplot as plt
+import torch
 
 def load_data():
     data = np.loadtxt('data/co_occur.csv', delimiter=',') 
@@ -122,6 +123,7 @@ def cosine_similarity_vectorized(x, u):
     return dotted / (outer + 1e-8)
 
 def load_embedded_analogies(norm_u, dictionary):
+    embedded_analogies = []
     analogies = []
     labels = []
     with open('data/analogy_task.txt') as f:
@@ -130,16 +132,18 @@ def load_embedded_analogies(norm_u, dictionary):
             a = tokens[0]
             b = tokens[1]
             aa = tokens[2]
+            analogies.append([a, b, aa])
             bb = tokens[3]
             target_vector = norm_u[dictionary.index(b)] - norm_u[dictionary.index(a)] + norm_u[dictionary.index(aa)]
-            analogies.append(target_vector)
+            embedded_analogies.append(target_vector)
             labels.append(bb)
 
     # n analogies x vector length (100)
-    analogies = np.stack(analogies)
-    print(analogies.shape)
+    embedded_analogies = np.stack(embedded_analogies)
+    print(embedded_analogies.shape)
     print(len(labels))
-    return analogies, labels
+    print(len(analogies))
+    return embedded_analogies, analogies, labels
 
 
 
@@ -148,21 +152,27 @@ def e2(u, dictionary):
     norms = np.linalg.norm(u, axis=1, keepdims=True)  
     norm_u = u / norms  
 
-    analogies, labels = load_embedded_analogies(norm_u, dictionary)
+    embedded_analogies, analogies, labels = load_embedded_analogies(norm_u, dictionary)
 
     # should be n x m
-    similarities = cosine_similarity_vectorized(analogies, norm_u)
+    similarities = cosine_similarity_vectorized(embedded_analogies, norm_u)
     print(similarities.shape)
 
-    indices = np.argmax(similarities, axis=1)
+    indices = torch.topk(torch.from_numpy(similarities), k=4, dim=1).indices
     print(indices.shape)
 
     num_correct = 0
-    for i in range(len(indices)):
-        prediction = dictionary[indices[i]]
-        print(f"Prediction: {prediction}, Correct: {labels[i]}")
+    for i in range(indices.shape[0]):
+        prediction = dictionary[indices[i, 0]]
+        j = 1
+        while prediction in analogies[i]:
+            prediction = dictionary[indices[i, j]]
+            j += 1
         if prediction == labels[i]:
             num_correct += 1
+        else:
+            print(analogies[i])
+            print(f"Prediction: {prediction}, Correct: {labels[i]}")
 
 
     return num_correct/len(indices)
