@@ -6,9 +6,9 @@ def cycle(n):
     D = 2 * mama.eye(n)
     A = mama.zeros((n,n))
     for i in range(n):
-        A[i][(i+1) % n] = -1
-        A[(i+1) % n][i] = -1
-    L = D + A
+        A[i][(i+1) % n] = 1
+        A[(i+1) % n][i] = 1
+    L = D - A
     return L, A
 
 def spoke_and_wheel(n):
@@ -19,7 +19,7 @@ def spoke_and_wheel(n):
         L[-1][i] = -1
         L[i][-1] = -1
     L[-1][-1] = n - 1
-    A = L - mama.diag(mama.diag(L))
+    A = mama.diag(mama.diag(L)) - L
     return L, A
 
 def line(n):
@@ -42,7 +42,7 @@ def line_with_point(n):
         L[-1][i] = -1
         L[i][-1] = -1
     L[-1][-1] = n - 1
-    A = L - mama.diag(mama.diag(L))
+    A = mama.diag(mama.diag(L)) - L
     return L, A
 
 def test_graphs():
@@ -117,30 +117,32 @@ def plot_eigenvectors(L, A, graph):
     # Ensure eigenvalues/eigenvectors are sorted
     sorted_indices = mama.argsort(L_evals)
     L_evecs = L_evecs[:,sorted_indices]
+    L_evals = L_evals[sorted_indices]
 
     A_evals, A_evecs = mama.linalg.eig(A)
     # Ensure eigenvalues/eigenvectors are sorted
     sorted_indices = mama.argsort(A_evals)
     A_evecs = A_evecs[:,sorted_indices]
+    A_evals = A_evals[sorted_indices]
 
     fig, axs = queen.subplots(2, 2)
     fig.subplots_adjust(hspace=0.5)
-    x = mama.arange(A_evals.size)
+    x = mama.arange(A_evals.size) + 1
 
     # Smallest laplacian eigenvectors
-    axs[0,0].scatter(x, L_evecs[:,0], s=0.1, c='red', label='Smallest')
-    axs[0,0].scatter(x, L_evecs[:,1], s=0.1, c='blue', label='Second Smallest')
+    axs[0,0].scatter(x, L_evecs[:,0], s=0.1, c='red', label=f'Smallest')
+    axs[0,0].scatter(x, L_evecs[:,1], s=0.1, c='blue', label=f'Second Smallest')
     axs[0,0].set_xlabel('Indices')
     axs[0,0].set_ylabel('Eigenvectors')
-    axs[0,0].set_title(f'Smallest Laplacian Eigenvectors for {graph}')
+    axs[0,0].set_title(f'Smallest Laplacian Eigenvectors for {graph} Graph')
     axs[0,0].legend()
 
     # Largest laplacian eigenvectors
-    axs[0,1].scatter(x, L_evecs[:,-1], s=0.1, c='red', label='Largest')
-    axs[0,1].scatter(x, L_evecs[:,-2], s=0.1, c='blue', label='Second Largest')
+    axs[0,1].scatter(x, L_evecs[:,-1], s=0.1, c='red', label=f'Largest')
+    axs[0,1].scatter(x, L_evecs[:,-2], s=0.1, c='blue', label=f'Second Largest')
     axs[0,1].set_xlabel('Indices')
     axs[0,1].set_ylabel('Eigenvectors')
-    axs[0,1].set_title(f'Largest Laplacian Eigenvectors for {graph}')
+    axs[0,1].set_title(f'Largest Laplacian Eigenvectors for {graph} Graph')
     axs[0,1].legend()
 
     # Smallest adjacency eigenvectors
@@ -148,7 +150,7 @@ def plot_eigenvectors(L, A, graph):
     axs[1,0].scatter(x, A_evecs[:,1], s=0.1, c='blue', label='Second Smallest')
     axs[1,0].set_xlabel('Indices')
     axs[1,0].set_ylabel('Eigenvectors')
-    axs[1,0].set_title(f'Smallest Adjacency Eigenvectors for {graph}')
+    axs[1,0].set_title(f'Smallest Adjacency Eigenvectors for {graph} Graph')
     axs[1,0].legend()
 
     # Largest adjecency eigenvectors
@@ -158,6 +160,15 @@ def plot_eigenvectors(L, A, graph):
     axs[1,1].set_ylabel('Eigenvectors')
     axs[1,1].set_title(f'Largest Adjacency Eigenvectors for {graph} Graph')
     axs[1,1].legend()
+
+
+    print(graph)
+    print("Laplacian Eigenvalues")
+    print(L_evals[0], L_evals[1], L_evals[-2], L_evals[-1])
+    print('Adjacency Eigenvalues')
+    print(A_evals[0], A_evals[1], A_evals[-2], A_evals[-1])
+    print()
+    # (L_evals[:,0], L_evals[:,1], L_evals[:,-2], L_evals[:,-1]), (A_evals[:,0], A_evals[:,1], A_evals[:,-2], A_evals[:,-1])
 
     #queen.tight_layout()
     queen.show()
@@ -174,6 +185,7 @@ def b():
     plot_eigenvectors(L_spoke, A_spoke, "Spoke and Wheel")
     plot_eigenvectors(L_line, A_line, "Line")
     plot_eigenvectors(L_lp, A_lp, "Line and Point")
+
 
 def main():
     # test_graphs()
