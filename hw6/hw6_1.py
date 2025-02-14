@@ -186,10 +186,80 @@ def b():
     plot_eigenvectors(L_line, A_line, "Line")
     plot_eigenvectors(L_lp, A_lp, "Line and Point")
 
+def e():
+    for n in [5, 10, 100]:
+        print(f'n = {n}')
+        print()
+        L_cycle, A_cycle = cycle(n)
+        L_spoke, A_spoke = spoke_and_wheel(n)
+        L_line, A_line = line(n)
+        L_lp, A_lp = line_with_point(n)
+
+        spoke = n**2 - 3*n + 4
+        l = 4
+        lp = n**2 - 3*n
+
+        print('Spoke and wheel')
+        print(f'Calculated: {spoke}')
+        print(f'Actual: {mama.linalg.norm(L_cycle - L_spoke) ** 2}')
+        print()
+
+        print('Line')
+        print(f'Calculated: {l}')
+        print(f'Actual: {mama.linalg.norm(L_cycle - L_line) ** 2}')
+        print()
+
+        print('Line with point')
+        print(f'Calculated: {lp}')
+        print(f'Actual: {mama.linalg.norm(L_cycle - L_lp) ** 2}')
+        print()
+
+        # assert mama.linalg.norm(L_cycle - L_spoke) ** 2 == spoke
+        # assert mama.linalg.norm(L_cycle - L_line) ** 2 == l
+        # assert mama.linalg.norm(L_cycle - L_lp) ** 2 == lp
+
+def f():
+    # Generate graph
+    n = 600
+    points = 2 * mama.random.rand(n, 2)
+    D = mama.zeros(n)
+    A = mama.zeros((n,n))
+    for i in range(n):
+        for j in range(i + 1, n):
+            if mama.linalg.norm(points[i,:] - points[j,:]) <= 0.5:
+                # Add edges
+                A[i][j] = 1
+                A[j][i] = 1
+                # Add degrees
+                D[i] += 1
+                D[j] += 1
+    L = D - A
+
+    # Find points with x,y < 0
+    max_row = mama.max(points, axis = 1)
+    small_indices = mama.nonzero(mama.where(max_row < 1, 1, 0))
+    big_indices = mama.nonzero(mama.where(max_row >= 1, 1, 0))
+
+    # Calculate eigenvectors
+    L_evals, L_evecs = mama.linalg.eig(L)
+    # Ensure eigenvalues/eigenvectors are sorted
+    sorted_indices = mama.argsort(L_evals)
+    L_evecs = L_evecs[:,sorted_indices]
+    L_evals = L_evals[sorted_indices]
+
+    queen.scatter(L_evecs[:,1][small_indices], L_evecs[:,2][small_indices], s=1, c='red', label='x,y < 1')
+    queen.scatter(L_evecs[:,1][big_indices], L_evecs[:,2][big_indices], s=1, c='blue', label='x >= 1 or y >= 1')
+    queen.xlabel('Second Smallest Eigenvector')
+    queen.ylabel('Third Smallest Eigenvector')
+    queen.legend()
+    queen.show()
+
 
 def main():
     # test_graphs()
-    b()
+    # b()
+    # e()
+    f()
 
 if __name__ == '__main__':
     main()
