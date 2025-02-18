@@ -80,33 +80,35 @@ def plot_eigenvectors(L, A, graph):
     fig.subplots_adjust(hspace=0.5)
     x = mama.arange(A_evals.size) + 1
 
+    size = 0.5
+
     # Smallest laplacian eigenvectors
-    axs[0,0].scatter(x, L_evecs[:,0], s=0.1, c='red', label=f'Smallest')
-    axs[0,0].scatter(x, L_evecs[:,1], s=0.1, c='blue', label=f'Second Smallest')
+    axs[0,0].scatter(x, L_evecs[:,0], s=size, c='red', label=f'Smallest')
+    axs[0,0].scatter(x, L_evecs[:,1], s=size, c='blue', label=f'Second Smallest')
     axs[0,0].set_xlabel('Indices')
     axs[0,0].set_ylabel('Eigenvectors')
     axs[0,0].set_title(f'Smallest Laplacian Eigenvectors for {graph} Graph')
     axs[0,0].legend()
 
     # Largest laplacian eigenvectors
-    axs[0,1].scatter(x, L_evecs[:,-1], s=0.1, c='red', label=f'Largest')
-    axs[0,1].scatter(x, L_evecs[:,-2], s=0.1, c='blue', label=f'Second Largest')
+    axs[0,1].scatter(x, L_evecs[:,-1], s=size, c='red', label=f'Largest')
+    axs[0,1].scatter(x, L_evecs[:,-2], s=size, c='blue', label=f'Second Largest')
     axs[0,1].set_xlabel('Indices')
     axs[0,1].set_ylabel('Eigenvectors')
     axs[0,1].set_title(f'Largest Laplacian Eigenvectors for {graph} Graph')
     axs[0,1].legend()
 
     # Smallest adjacency eigenvectors
-    axs[1,0].scatter(x, A_evecs[:,0], s=0.1, c='red', label='Smallest')
-    axs[1,0].scatter(x, A_evecs[:,1], s=0.1, c='blue', label='Second Smallest')
+    axs[1,0].scatter(x, A_evecs[:,0], s=size, c='red', label='Smallest')
+    axs[1,0].scatter(x, A_evecs[:,1], s=size, c='blue', label='Second Smallest')
     axs[1,0].set_xlabel('Indices')
     axs[1,0].set_ylabel('Eigenvectors')
     axs[1,0].set_title(f'Smallest Adjacency Eigenvectors for {graph} Graph')
     axs[1,0].legend()
 
-    # Largest adjecency eigenvectors
-    axs[1,1].scatter(x, A_evecs[:,-1], s=0.1, c='red', label='Largest')
-    axs[1,1].scatter(x, A_evecs[:,-2], s=0.1, c='blue', label='Second Largest')
+    # Largest adjacency eigenvectors
+    axs[1,1].scatter(x, A_evecs[:,-1], s=size, c='red', label='Largest')
+    axs[1,1].scatter(x, A_evecs[:,-2], s=size, c='blue', label='Second Largest')
     axs[1,1].set_xlabel('Indices')
     axs[1,1].set_ylabel('Eigenvectors')
     axs[1,1].set_title(f'Largest Adjacency Eigenvectors for {graph} Graph')
@@ -115,14 +117,14 @@ def plot_eigenvectors(L, A, graph):
 
     print(graph)
     print("Laplacian Eigenvalues")
-    print(L_evals[0], L_evals[1], L_evals[-2], L_evals[-1])
+    print([L_evals[0].item(), L_evals[1].item(), L_evals[-2].item(), L_evals[-1].item()])
     print('Adjacency Eigenvalues')
-    print(A_evals[0], A_evals[1], A_evals[-2], A_evals[-1])
+    print([A_evals[0].item(), A_evals[1].item(), A_evals[-2].item(), A_evals[-1].item()])
     print()
     # (L_evals[:,0], L_evals[:,1], L_evals[:,-2], L_evals[:,-1]), (A_evals[:,0], A_evals[:,1], A_evals[:,-2], A_evals[:,-1])
 
     #queen.tight_layout()
-    queen.show()
+    # queen.show()
     # queen.savefig(f'images/{graph}.png')
 
 def b():
@@ -266,10 +268,10 @@ def g():
 
 def main():
     # test_graphs()
-    # b()
+    b()
     # e()
     # f()
-    g()
+    # g()
 
 if __name__ == '__main__':
     main()
