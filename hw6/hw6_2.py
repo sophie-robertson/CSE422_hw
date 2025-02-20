@@ -20,17 +20,18 @@ def friend_laplacian(n = 1495):
     L = D - A
     return L, A, D
 
-def a(print = True):
+def a(to_print = True):
     L, _, _ = friend_laplacian()
     L_evals, L_evecs = mama.linalg.eig(L)
     sorted_indices = mama.argsort(L_evals)
     L_evecs = L_evecs[:,sorted_indices]
     L_evals = L_evals[sorted_indices]
-    if print:
+    if to_print:
         for i in range(0, 12):
             # multiplicity of 0 eigenvalue corresponds to connected components
             if L_evals[i] < 10e-12:
-                print(0)
+                print("0.0")
+                print(L_evecs[:,i])
             else:
                 print(L_evals[i])
 
@@ -90,7 +91,7 @@ def c():
 
     # initial cut
     # len = 1484, contains all of component 0 plus some extra components, so it is totally unconnected to V\S
-    set_1 = mama.argwhere(f_vec > 0)
+    set_1 = mama.argwhere(comp_labels == 0)
     cond_1, n, d = conductance(set_1, A, D)
     print(f"Conductance for set 1: {cond_1}, n = {n}, d = {d}")
 
@@ -126,8 +127,8 @@ def d():
 
 def main():
     # a()
-    c()
-    # d()
+    # c()
+    d()
 
 if __name__ == '__main__':
     main()
