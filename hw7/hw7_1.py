@@ -99,27 +99,14 @@ def c(A, verbose = True):
         print(f"Curr r: {curr_r}")
     return curr_r
 
-def d(curr_r):
+def d(A, curr_r):
     img_arr = get_wonderland_tree()
     img_vec = img_arr.flatten()
 
-    # x_r = b(curr_r - 1, verbose = False)
-    # normed_dist = np.linalg.norm(img_vec - x_r, ord=1)
-    # print(f"Dist for r = {curr_r - 1}: {normed_dist}")
-    # x_r = b(curr_r, verbose = False)
-    # normed_dist = np.linalg.norm(img_vec - x_r, ord=1)
-    # print(f"Dist for r = {curr_r}: {normed_dist}")
-    # x_r = b(curr_r + 1, verbose = False)
-    # normed_dist = np.linalg.norm(img_vec - x_r, ord=1)
-    # print(f"Dist for r = {curr_r + 1}: {normed_dist}")
-    # x_r = b(curr_r + 2, verbose = False)
-    # normed_dist = np.linalg.norm(img_vec - x_r, ord=1)
-    # print(f"Dist for r = {curr_r + 2}: {normed_dist}")
-
     rs = np.arange(curr_r-10, curr_r + 3)
     distances = []
-    for r in rs:
-        x_r = b(r, verbose = False)
+    for curr_r in rs:
+        x_r = b(A, curr_r, verbose = False)
         distances.append(np.linalg.norm(img_vec - x_r, ord=1))
     
     plt.figure()
@@ -135,7 +122,7 @@ def get_r_bar(probs):
         stars = []
         print(prob)
         for i in range(5):
-            
+
             A = np.random.choice(a = [1, -1, 0], size = (1200, 1200), p = [prob/2, prob/2, 1-prob] )
             print(np.count_nonzero(A)/ (1200*1200))
             r_star = c(A, verbose = False)
@@ -163,11 +150,11 @@ def main():
     # a()
     # b(700)
 
-    # np.random.seed(56)
-    # A = np.random.normal(size=(1200, 1200))
-    # c(A)
-    # d(640)
-    e()
+    np.random.seed(56)
+    A = np.random.normal(size=(1200, 1200))
+    #c(A)
+    d(A, 640)
+    #e()
     # f()
     
 
