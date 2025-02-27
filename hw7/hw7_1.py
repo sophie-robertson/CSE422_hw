@@ -120,11 +120,9 @@ def get_r_bar(probs):
     r_bars = []
     for prob in probs:
         stars = []
-        print(prob)
         for i in range(5):
 
             A = np.random.choice(a = [1, -1, 0], size = (1200, 1200), p = [prob/2, prob/2, 1-prob] )
-            print(np.count_nonzero(A)/ (1200*1200))
             r_star = c(A, verbose = False)
             stars.append(r_star)
         r_bars.append(np.mean(np.asarray(stars)).item())
@@ -147,15 +145,15 @@ def f():
 
 
 def main():
-    # a()
+    a()
     # b(700)
 
     np.random.seed(56)
     A = np.random.normal(size=(1200, 1200))
-    #c(A)
-    d(A, 640)
-    #e()
-    # f()
+    # c(A)
+    # d(A, 640)
+    # e()
+    # # f()
     
 
 if __name__ == '__main__':
