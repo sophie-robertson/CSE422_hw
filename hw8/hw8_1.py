@@ -27,6 +27,31 @@ def a():
     print(f"Equal weight investment returns: {total}")
     return
 
+def a_sam():
+    df = load_close()
+    # Get best-performing stock
+    total_change = (df.iloc[-1] - df.iloc[0]) / df.iloc[0]
+    best_performing = df.columns[np.argmax(total_change)]
+
+    # start_date = '05/28/2019'
+    # end_date = '05/24/2024'
+    # date_range = pd.date_range(start=start_date, end=end_date, freq='D')
+    days = np.arange(df.shape[0])
+    pct_change = df.pct_change().fillna(0) # 0% return on the first day
+    pct_change = pct_change + 1 # Add 1 to express as a multiple of the original price
+    # Daily returns for best-performing stock
+    best_returns = pct_change[best_performing]
+    cum_best = best_returns.cumprod() - 1 # Subtract 1 so that no change is a return of 0
+    # Daily returns for equal investment
+    equal_returns = pct_change.mean(axis=1)
+    cum_equal = equal_returns.cumprod() - 1
+
+    plt.plot(days, cum_best, label='Best Stock (NVDA)')
+    plt.plot(days, cum_equal, label='Equal Investment Portfolio')
+    plt.title('Cumulative returns of portfolios')
+    plt.legend()
+    plt.show()
+    
 def c():
     # Is this asking for the inequality we discussed ? 
     # We make at most 2*sqrt(Tlog(N)) more mistakes than the best expert (best stock) where
@@ -36,15 +61,21 @@ def c():
     num_stocks = df.shape[1]
     num_days = df.shape[0]
     # Calculate rho
-    max_loss = np.zeros(num_stocks)
-    for j in range(num_days - 1):
-        diff = (df.iloc[j] - df.iloc[j+1])/df.iloc[j]
-        abs_diff = diff.abs()
-        for i in range(num_stocks):
-            if abs_diff[i] > max_loss[i]:
-                max_loss[i] = abs_diff[i]
-    rho = np.max(max_loss).item()
+    # max_loss = np.zeros(num_stocks)
+    # for j in range(num_days - 1):
+    #     diff = (df.iloc[j] - df.iloc[j+1])/df.iloc[j]
+    #     abs_diff = diff.abs()
+    #     for i in range(num_stocks):
+    #         if abs_diff[i] > max_loss[i]:
+    #             max_loss[i] = abs_diff[i]
+    # rho = np.max(max_loss).item()
+    # print(f'rho = {rho}')
+
+    # Alternate calculation
+    changes = df.pct_change().dropna().abs()
+    rho = df.max(changes) # Find maximum percent change
     print(f'rho = {rho}')
+
 
     epsilon = np.sqrt(np.log(num_stocks)/ num_days)
     print(f"Theoretical best epsilon: {epsilon}")
@@ -73,11 +104,36 @@ def d():
     # No real strategy as we can't rely on what has happened previously as any indicator for what will happen next. 
     return 
 
+def d_sam():
+    df = load_close()
+    new_mat = np.random.choice([1, 0], size=(df.shape[0] - 1, df.shape[1])) # Number of changes for stocks
+    # Get best-performing stock
+    total_change = np.sum(new_mat, axis=0) # Best performing has the most 1s (doubling of stock value)
+    best_performing = np.argmax(total_change)
+    worst_performing = np.argmin(total_change)
+
+    # Get cumulative returns (log_2 based, otherwise we get numerical overflow)
+    days = np.arange(df.shape[0])
+    # Daily returns for best-performing stock
+    cum_best = new_mat[:,best_performing].cumsum()
+    # cum_worst = new_mat[:,worst_performing].cumsum()
+    cum_best = np.insert(cum_best, 0, 0) # Add 0 to start
+    # cum_worst = np.insert(cum_worst, 0,0) # Add 0 to start
+
+    plt.plot(days, cum_best)
+    plt.plot(days, cum_worst)
+    plt.title('Cumulative returns')
+    plt.xlabel('Days')
+    # plt.yscale('log')
+    plt.ylabel('Returns (log based)')
+    plt.show()
 
 def main():
-    a()
+    # a()
+    # a_sam()
     # c()
     # d()
+    d_sam()
     
 
 if __name__ == '__main__':
