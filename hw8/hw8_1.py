@@ -33,16 +33,35 @@ def c():
         # T = number of days
         # N = number of experts (stocks)
     df = load_close()
-    bound = 2 * np.sqrt(df.shape[0] * np.log(df.shape[1]))
-    print(f"Theoretical bound (We make at most this many more mistakes than the best stock): {bound}")
+    num_stocks = df.shape[1]
+    num_days = df.shape[0]
+    # Calculate rho
+    max_loss = np.zeros(num_stocks)
+    for j in range(num_days - 1):
+        diff = (df.iloc[j] - df.iloc[j+1])/df.iloc[j]
+        abs_diff = diff.abs()
+        for i in range(num_stocks):
+            if abs_diff[i] > max_loss[i]:
+                max_loss[i] = abs_diff[i]
+    rho = np.max(max_loss).item()
+    print(f'rho = {rho}')
+
+    epsilon = np.sqrt(np.log(num_stocks)/ num_days)
+    print(f"Theoretical best epsilon: {epsilon}")
+
+    regret = 2 * rho * np.sqrt(num_days * np.log(num_stocks))
+    print(f'Regret bound: {regret}')
+
+    # bound = 2 * np.sqrt(df.shape[0] * np.log(df.shape[1]))
+    # print(f"Theoretical bound (We make at most this many more mistakes than the best stock): {bound}")
 
     # number of mistakes weighted majority ≤ 2.41(#mistakes expert i + log_2(N))
     # To achieve the lowest bound, we use expert i as the best performing stock 
 
 
     # To optimize epsilon, we calculate epsilon = sqrt(log(N)/T)
-    epsilon = np.sqrt(np.log(df.shape[1])/ df.shape[0])
-    print(f"Theoretical best epsilon: {epsilon}")
+    # epsilon = np.sqrt(np.log(df.shape[1])/ df.shape[0])
+    # print(f"Theoretical best epsilon: {epsilon}")
 
 def d():
     # No 
@@ -56,10 +75,9 @@ def d():
 
 
 def main():
-    # a()
-    #   c isn't done but I'll come back to it 
+    a()
     # c()
-    d()
+    # d()
     
 
 if __name__ == '__main__':
