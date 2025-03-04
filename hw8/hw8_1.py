@@ -51,6 +51,31 @@ def a_sam():
     plt.title('Cumulative returns of portfolios')
     plt.legend()
     plt.show()
+
+def a_additive_return():
+    df = load_close()
+    # Get best-performing stock
+    total_change = (df.iloc[-1] - df.iloc[0]) / df.iloc[0]
+    best_performing = df.columns[np.argmax(total_change)]
+
+    # start_date = '05/28/2019'
+    # end_date = '05/24/2024'
+    # date_range = pd.date_range(start=start_date, end=end_date, freq='D')
+    days = np.arange(df.shape[0])
+    pct_change = df.pct_change().fillna(0) # 0% return on the first day
+    # Daily returns for best-performing stock
+    best_returns = pct_change[best_performing]
+    cum_best = best_returns.cumsum() # Subtract 1 so that no change is a return of 0
+    # Daily returns for equal investment
+    equal_returns = pct_change.mean(axis=1)
+    cum_equal = equal_returns.cumsum()
+
+    plt.plot(days, cum_best, label='Best Stock (NVDA)')
+    plt.plot(days, cum_equal, label='Equal Investment Portfolio')
+    plt.title('Cumulative returns of portfolios')
+    plt.legend()
+    plt.show()
+
     
 def c():
     # Is this asking for the inequality we discussed ? 
@@ -110,27 +135,23 @@ def d_sam():
     # Get best-performing stock
     total_change = np.sum(new_mat, axis=0) # Best performing has the most 1s (doubling of stock value)
     best_performing = np.argmax(total_change)
-    worst_performing = np.argmin(total_change)
 
     # Get cumulative returns (log_2 based, otherwise we get numerical overflow)
     days = np.arange(df.shape[0])
     # Daily returns for best-performing stock
     cum_best = new_mat[:,best_performing].cumsum()
-    # cum_worst = new_mat[:,worst_performing].cumsum()
     cum_best = np.insert(cum_best, 0, 0) # Add 0 to start
-    # cum_worst = np.insert(cum_worst, 0,0) # Add 0 to start
 
     plt.plot(days, cum_best)
-    plt.plot(days, cum_worst)
-    plt.title('Cumulative returns')
+    plt.title('Cumulative returns of best stock')
     plt.xlabel('Days')
-    # plt.yscale('log')
-    plt.ylabel('Returns (log based)')
+    plt.ylabel('Returns')
     plt.show()
 
 def main():
     # a()
     # a_sam()
+    # a_additive_return()
     # c()
     # d()
     d_sam()
