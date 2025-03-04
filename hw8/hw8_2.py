@@ -22,9 +22,9 @@ def a(test_part_c = False):
     if test_part_c:
         percent_returns = df.pct_change()#.dropna()
         percent_returns["NVDA"] = 0
-        percent_returns = percent_returns.dropna()
+        percent_returns = percent_returns.fillna(0)
     else:
-        percent_returns = df.pct_change().dropna()
+        percent_returns = df.pct_change().fillna(0)
 
     print(percent_returns)
     print(percent_returns.shape)
@@ -37,14 +37,16 @@ def a(test_part_c = False):
     eps_to_return = {}
     for e in eps:
         potential_vec = np.ones(N) / N
-        cumulative_returns = [1]
+        cumulative_returns = [0]
         for t in range(1,T):
             returns = percent_returns.iloc[t, :]
             weighted_return = np.dot(potential_vec, returns)
-            cumulative_returns.append(cumulative_returns[-1] * (1 + weighted_return))
+            #print(weighted_return)
+            cumulative_returns.append(cumulative_returns[-1] + (weighted_return))
             
             losses_t = -returns
             potential_vec *= np.exp(-e * losses_t)
+            # Should this be normalized every time ? It should be a probability distribution right
             potential_vec /= potential_vec.sum()
     
         eps_to_return[e] = cumulative_returns
@@ -60,7 +62,7 @@ def a(test_part_c = False):
     plt.show()
 
 def b(test_part_c = False):
-    eps = [0, 0.01, 0.1, 1, 2, 4, 8]
+    eps = [8] #[0, 0.01, 0.1, 1, 2, 4, 8]
     df = load_close(test_part_c)
     if test_part_c:
         percent_returns = df.pct_change()#.dropna()
@@ -76,10 +78,9 @@ def b(test_part_c = False):
         max_probs = []
         for t in range(T-1):
             returns = percent_returns.iloc[t, :]
-            weighted_return = np.dot(potential_vec, returns)
-            max_probs.append(np.max(weighted_return))
+            max_probs.append(potential_vec[np.argmax(potential_vec)])
             # For seeing what the alg does
-            # print(f"Day: {t}, Stock: {df.iloc[:, np.argmax(potential_vec)].name}, Prob: {potential_vec[np.argmax(potential_vec)]}")
+            print(f"Day: {t}, Stock: {df.iloc[:, np.argmax(potential_vec)].name}, Prob: {potential_vec[np.argmax(potential_vec)]}")
 
             losses_t = -returns
             potential_vec *= np.exp(-e * losses_t)
@@ -108,12 +109,12 @@ def b(test_part_c = False):
 
 
 def main():
-    # a()
-    # b()
+    #a()
+    b()
 
     # For prblm 2 part c
-    # a(test_part_c = True)
-    b(test_part_c = True)
+    #a(test_part_c = True)
+    #b(test_part_c = True)
     
 
 if __name__ == '__main__':
