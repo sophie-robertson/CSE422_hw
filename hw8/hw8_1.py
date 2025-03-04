@@ -65,7 +65,8 @@ def a_additive_return():
     pct_change = df.pct_change().fillna(0) # 0% return on the first day
     # Daily returns for best-performing stock
     best_returns = pct_change[best_performing]
-    cum_best = best_returns.cumsum() # Subtract 1 so that no change is a return of 0
+    cum_best = best_returns.cumsum()
+    print(cum_best.iloc[-1])
     # Daily returns for equal investment
     equal_returns = pct_change.mean(axis=1)
     cum_equal = equal_returns.cumsum()
@@ -151,10 +152,10 @@ def d_sam():
 def main():
     # a()
     # a_sam()
-    # a_additive_return()
+    a_additive_return()
     # c()
     # d()
-    d_sam()
+    # d_sam()
     
 
 if __name__ == '__main__':
