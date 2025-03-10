@@ -41,11 +41,11 @@ def TV(p1, p2):
 
 def a():
     P_1, stat_1 = cycle(17)
-    var_1 = TV_walk(17, P_1, stat_1)
+    var_1 = TV_walk(17, P_1, stat_1, 0)
     P_2, stat_2 = cycle(18)
-    var_2 = TV_walk(18, P_2, stat_2)
+    var_2 = TV_walk(18, P_2, stat_2, 0)
     P_3, stat_3 = cycle_with_loops(18)
-    var_3 = TV_walk(18, P_3, stat_3)
+    var_3 = TV_walk(18, P_3, stat_3, 0)
 
     steps = np.arange(100 + 1)
     plt.plot(steps, var_1, label='17-cycle')
@@ -55,9 +55,9 @@ def a():
     plt.savefig('figures/Q1b.png')
     plt.show()
 
-def TV_walk(n, P, stat):
+def TV_walk(n, P, stat, start):
     curr = np.zeros(n)
-    curr[0] = 1
+    curr[start] = 1
     variations = []
     for t in range(100+1):
         variations.append(TV(curr, stat).item())
@@ -93,22 +93,25 @@ def calculate_eigvals(P):
     # print(f'Largest eigenvalue: {P_evals[-1]}')
     # print()
     # print(P_evals[-1])
-    # print(P_evecs[-1]) # not giving the correct stationary distributions?
+    # print(P_evecs[-1]) # not giving the correct stationary distributions - should be uniform for 1/3
 
 def e():
-    n=17
-
-    # # Connected across
+    n = 18
+    # Cycles for vertices i % 3 != 0, cross-graph connections
+    # for vertices with i % 3 == 0.
     P = np.zeros((n,n))
-    for i in range(n):
+    for i in range(n): # Cycles
         P[i][(i+1) % n] = 1/3
         P[i][(i-1) % n] = 1/3
-    for i in range(n // 2):
-        P[i][i + n // 2] = 1/3
-        P[i + n // 2][i] = 1/3
-    P[-1][-1] = 1/3
+        P[i][i] = 1/3
+    for i in range(0, n//2, 3):
+        P[i][i + n//2] = 1/3
+        P[i + n//2][i] = 1/3
+        P[i][i] = 0
+        P[i+n//2][i+n//2] = 0
+    print(P)
 
-    # # Self loops
+    # # Self loops - performs identically to the 18 w loops, 0.9549814862695705
     # P = np.zeros((n,n))
     # for i in range(n):
     #     P[i][(i+1) % n] = 1/3
@@ -116,24 +119,27 @@ def e():
     #     P[i][i] = 1/3
 
     stat = np.full(n, 1 / n)
-    var = TV_walk(17, P, stat)
     calculate_eigvals(P)
-    
-    P_1, stat_1 = cycle(17)
-    var_1 = TV_walk(17, P_1, stat_1)
-    P_2, stat_2 = cycle(18)
-    var_2 = TV_walk(18, P_2, stat_2)
-    P_3, stat_3 = cycle_with_loops(18)
-    var_3 = TV_walk(18, P_3, stat_3)
 
-    steps = np.arange(100 + 1)
-    plt.plot(steps, var, label='Constructed')
-    plt.plot(steps, var_1, label='17-cycle')
-    plt.plot(steps, var_2, label='18-cycle')
-    plt.plot(steps, var_3, label='18-cycle with loops')
-    plt.legend()
-    plt.savefig('figures/Q1e.png')
-    plt.show()
+    for i in range(3):
+        var = TV_walk(18, P, stat, i)
+        
+        P_1, stat_1 = cycle(17)
+        var_1 = TV_walk(17, P_1, stat_1, i)
+        P_2, stat_2 = cycle(18)
+        var_2 = TV_walk(18, P_2, stat_2, i)
+        P_3, stat_3 = cycle_with_loops(18)
+        var_3 = TV_walk(18, P_3, stat_3, i)
+
+        steps = np.arange(100 + 1)
+        plt.title(f'TV Distance for starting vertex v = {i + 1}')
+        plt.plot(steps, var, label='Constructed')
+        plt.plot(steps, var_1, label='17-cycle')
+        plt.plot(steps, var_2, label='18-cycle')
+        plt.plot(steps, var_3, label='18-cycle with loops')
+        plt.legend()
+        plt.savefig(f'figures/Q1e_{i}.png')
+        plt.show()
 
 def main():
     # test_graphs()
