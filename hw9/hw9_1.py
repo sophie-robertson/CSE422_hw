@@ -39,7 +39,7 @@ def test_graphs():
 def TV(p1, p2):
     return (1/2) * np.sum(np.abs(p1 - p2))
 
-def a():
+def b():
     P_1, stat_1 = cycle(17)
     var_1 = TV_walk(17, P_1, stat_1, 0)
     P_2, stat_2 = cycle(18)
@@ -62,7 +62,6 @@ def TV_walk(n, P, stat, start):
     for t in range(100+1):
         variations.append(TV(curr, stat).item())
         curr = curr @ P
-        #print(curr)
     return variations
 
 def test_TV_walk():
@@ -111,6 +110,13 @@ def e():
         P[i+n//2][i+n//2] = 0
     print(P)
 
+    # # Self loops on every vertex
+    # P = np.zeros((n,n))
+    # for i in range(n): # Cycles
+    #     P[i][(i+1) % n] = 1/3
+    #     P[i][(i-1) % n] = 1/3
+    #     P[i][i] = 1/3
+
     # # Self loops - performs identically to the 18 w loops, 0.9549814862695705
     # P = np.zeros((n,n))
     # for i in range(n):
@@ -144,7 +150,7 @@ def e():
 def main():
     # test_graphs()
     # test_TV_walk()
-    # a()
+    # b()
     # c()
     e()
 
